@@ -13,7 +13,8 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 
 export default function App() {
-  const [selectedFilter, setSelectedFilter] = useState('all');
+  // activeService state: null (overview), 'sap', 'recruitment', 'ai'
+  const [activeService, setActiveService] = useState(null);
 
   const handleOpenContact = () => {
     const contactElem = document.getElementById('contact');
@@ -22,73 +23,75 @@ export default function App() {
     }
   };
 
-  const handleSelectPillar = (pillarId) => {
-    setSelectedFilter(pillarId);
-    const projElem = document.getElementById('projects');
-    if (projElem) {
-      projElem.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500 selection:text-white">
-      {/* Clean Navbar */}
+      {/* Dynamic Navbar */}
       <Navbar
+        activeService={activeService}
+        setActiveService={setActiveService}
         onOpenContact={handleOpenContact}
       />
 
-      {/* Hero Canvas with 3D particles */}
+      {/* Hero Canvas with 3D particles & dynamic headline */}
       <HeroCanvas
+        activeService={activeService}
+        setActiveService={setActiveService}
         onOpenContact={handleOpenContact}
-        onSelectPillar={handleSelectPillar}
       />
 
       {/* 3 Core Interactive Service Pillars */}
       <ServicePillarsSection
-        onSelectPillar={handleSelectPillar}
-        onOpenContact={handleOpenContact}
+        activeService={activeService}
+        setActiveService={setActiveService}
       />
 
-      {/* Featured Projects Showcase */}
+      {/* Dynamic Projects Showcase */}
       <ProjectsSection
-        activeService={selectedFilter}
-        setActiveService={setSelectedFilter}
+        activeService={activeService}
+        setActiveService={setActiveService}
         onOpenContact={handleOpenContact}
       />
 
-      {/* Vertical Domain Industries */}
+      {/* Dynamic Industries */}
       <IndustriesSection
-        activeService={selectedFilter}
+        activeService={activeService}
         onOpenContact={handleOpenContact}
       />
 
       {/* Solutions & Execution Workflow */}
       <SolutionsWorkflowSection
+        activeService={activeService}
+        setActiveService={setActiveService}
         onOpenContact={handleOpenContact}
       />
 
       {/* Interactive Enterprise ROI Estimator */}
       <InteractiveRoiSection
+        activeService={activeService}
         onOpenContact={handleOpenContact}
       />
 
       {/* Why Clyptus Advantage */}
       <WhyClyptusSection />
 
-      {/* Insights & Blogs */}
+      {/* Dynamic Insights & Blogs */}
       <BlogsSection
-        activeService={selectedFilter}
+        activeService={activeService}
         onOpenContact={handleOpenContact}
       />
 
       {/* Verified Client Testimonials */}
       <TestimonialsSection />
 
-      {/* Contact & Quote Request Form */}
-      <ContactSection />
+      {/* Dynamic Contact & Quote Request Form */}
+      <ContactSection
+        activeService={activeService}
+      />
 
       {/* Footer */}
-      <Footer />
+      <Footer
+        setActiveService={setActiveService}
+      />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { SERVICES } from '../data/clyptusData';
-import { Layers, Users, Cpu, Sparkles, ChevronDown, Menu, X, ArrowRight, PhoneCall } from 'lucide-react';
+import { SERVICES, CLYPTUS_BRAND } from '../data/clyptusData';
+import { Layers, Users, Cpu, Sparkles, ChevronDown, Menu, X, ArrowRight, PhoneCall, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Navbar({ onOpenContact }) {
+export default function Navbar({ activeService, setActiveService, onOpenContact }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [serviceDropdownOpen, setServiceDropdownOpen] = useState(false);
@@ -16,23 +16,36 @@ export default function Navbar({ onOpenContact }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const activeServiceObj = SERVICES.find(s => s.id === activeService);
+
+  const getServiceBadgeStyle = () => {
+    if (activeService === 'sap') return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30';
+    if (activeService === 'recruitment') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+    if (activeService === 'ai') return 'bg-purple-500/10 text-purple-400 border-purple-500/30';
+    return 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+  };
+
   const navLinks = [
     { name: 'Home', href: '#home' },
     { name: 'Services', href: '#services' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Industries', href: '#industries' },
-    { name: 'Solutions', href: '#solutions' },
-    { name: 'Insights', href: '#blogs' },
+    { 
+      name: activeService === 'sap' ? 'SAP Projects' : activeService === 'recruitment' ? 'Recruitment Projects' : activeService === 'ai' ? 'AI Projects' : 'Projects', 
+      href: '#projects' 
+    },
+    { 
+      name: activeService === 'sap' ? 'SAP Industries' : activeService === 'recruitment' ? 'Recruitment Industries' : activeService === 'ai' ? 'AI Industries' : 'Industries', 
+      href: '#industries' 
+    },
+    { 
+      name: activeService === 'sap' ? 'SAP Solutions' : activeService === 'recruitment' ? 'Recruitment Solutions' : activeService === 'ai' ? 'AI Solutions' : 'Solutions', 
+      href: '#solutions' 
+    },
+    { 
+      name: activeService === 'sap' ? 'SAP Insights' : activeService === 'recruitment' ? 'Recruitment Insights' : activeService === 'ai' ? 'AI Insights' : 'Blogs', 
+      href: '#blogs' 
+    },
     { name: 'Contact', href: '#contact' },
   ];
-
-  const handlePillarClick = (href) => {
-    setServiceDropdownOpen(false);
-    const elem = document.querySelector(href);
-    if (elem) {
-      elem.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   return (
     <>
@@ -64,15 +77,17 @@ export default function Navbar({ onOpenContact }) {
           {/* Clyptus Brand Logo */}
           <a href="#home" className="flex items-center space-x-3 group">
             <div className="relative flex items-center justify-center p-2 rounded-xl bg-slate-800/80 border border-slate-700/60 group-hover:border-blue-500/50 transition-all shadow-md">
+              {/* Preserved Clyptus Logo Graphic */}
               <div className="flex items-center space-x-2">
                 <span className="font-extrabold text-2xl tracking-wider text-white">
                   CLYPTUS<span className="text-blue-500">.</span>
                 </span>
               </div>
             </div>
-            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border bg-blue-500/10 text-blue-400 border-blue-500/30">
+            {/* Active Service Context Badge */}
+            <div className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${getServiceBadgeStyle()}`}>
               <Sparkles size={12} className="animate-pulse" />
-              <span>Enterprise Hub</span>
+              <span>{activeService ? `${activeServiceObj?.title} View` : 'Enterprise Hub'}</span>
             </div>
           </a>
 
@@ -89,16 +104,25 @@ export default function Navbar({ onOpenContact }) {
             ))}
           </nav>
 
-          {/* Service Dropdown & CTA */}
+          {/* Service Pillar Switcher Dropdown & CTA */}
           <div className="hidden md:flex items-center space-x-3">
             
+            {/* Service Pillar Quick Switcher */}
             <div className="relative">
               <button
                 onClick={() => setServiceDropdownOpen(!serviceDropdownOpen)}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border bg-slate-800/90 text-slate-200 border-slate-700 hover:bg-slate-800 transition-all"
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                  activeService 
+                    ? getServiceBadgeStyle()
+                    : 'bg-slate-800/90 text-slate-200 border-slate-700 hover:bg-slate-800'
+                }`}
               >
-                <Sparkles size={14} className="text-blue-400" />
-                <span>Services</span>
+                {activeService === 'sap' && <Layers size={14} className="text-cyan-400" />}
+                {activeService === 'recruitment' && <Users size={14} className="text-emerald-400" />}
+                {activeService === 'ai' && <Cpu size={14} className="text-purple-400" />}
+                {!activeService && <Sparkles size={14} className="text-blue-400" />}
+                
+                <span>{activeService ? activeServiceObj?.title : 'Select Pillar'}</span>
                 <ChevronDown size={14} className={`transition-transform duration-200 ${serviceDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -112,14 +136,35 @@ export default function Navbar({ onOpenContact }) {
                     className="absolute right-0 mt-2 w-64 glass-panel rounded-2xl p-2 shadow-2xl border border-slate-700/80 z-50"
                   >
                     <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-3 py-1.5 border-b border-slate-800">
-                      Explore Clyptus Pillars
+                      Switch Clyptus Experience
                     </div>
+
+                    <button
+                      onClick={() => {
+                        setActiveService(null);
+                        setServiceDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-medium transition-colors ${
+                        activeService === null ? 'bg-blue-600/20 text-blue-400 font-semibold' : 'text-slate-300 hover:bg-slate-800/60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Sparkles size={15} className="text-blue-400" />
+                        <span>All Services (Overview)</span>
+                      </div>
+                      {activeService === null && <CheckCircle2 size={14} className="text-blue-400" />}
+                    </button>
 
                     {SERVICES.map((srv) => (
                       <button
                         key={srv.id}
-                        onClick={() => handlePillarClick('#services')}
-                        className="w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800/60 transition-colors"
+                        onClick={() => {
+                          setActiveService(srv.id);
+                          setServiceDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-medium transition-colors ${
+                          activeService === srv.id ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800/60'
+                        }`}
                       >
                         <div className="flex items-center gap-2.5">
                           {srv.id === 'sap' && <Layers size={15} className="text-cyan-400" />}
@@ -130,6 +175,7 @@ export default function Navbar({ onOpenContact }) {
                             <div className="text-[10px] text-slate-400">{srv.subtitle}</div>
                           </div>
                         </div>
+                        {activeService === srv.id && <CheckCircle2 size={14} className="text-emerald-400" />}
                       </button>
                     ))}
                   </motion.div>
@@ -169,7 +215,37 @@ export default function Navbar({ onOpenContact }) {
               className="md:hidden glass-panel border-b border-slate-800 overflow-hidden"
             >
               <div className="px-4 py-4 space-y-3">
-                <div className="space-y-2">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Select Experience Mode:
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => { setActiveService('sap'); setMobileMenuOpen(false); }}
+                    className={`p-2 rounded-xl text-xs font-bold border flex flex-col items-center gap-1 ${
+                      activeService === 'sap' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500' : 'bg-slate-800/80 text-slate-300 border-slate-700'
+                    }`}
+                  >
+                    <Layers size={16} /> SAP
+                  </button>
+                  <button
+                    onClick={() => { setActiveService('recruitment'); setMobileMenuOpen(false); }}
+                    className={`p-2 rounded-xl text-xs font-bold border flex flex-col items-center gap-1 ${
+                      activeService === 'recruitment' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500' : 'bg-slate-800/80 text-slate-300 border-slate-700'
+                    }`}
+                  >
+                    <Users size={16} /> Recruitment
+                  </button>
+                  <button
+                    onClick={() => { setActiveService('ai'); setMobileMenuOpen(false); }}
+                    className={`p-2 rounded-xl text-xs font-bold border flex flex-col items-center gap-1 ${
+                      activeService === 'ai' ? 'bg-purple-500/20 text-purple-400 border-purple-500' : 'bg-slate-800/80 text-slate-300 border-slate-700'
+                    }`}
+                  >
+                    <Cpu size={16} /> AI
+                  </button>
+                </div>
+
+                <div className="pt-2 border-t border-slate-800 space-y-2">
                   {navLinks.map((link) => (
                     <a
                       key={link.name}
