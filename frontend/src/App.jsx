@@ -12,6 +12,11 @@ import TestimonialsSection from './components/TestimonialsSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 
+// Teammate Domain Features
+import RecruitmentFeature from './components/domains/recruitment/RecruitmentFeature';
+import SapFeature from './components/domains/sap/SapFeature';
+import AiFeature from './components/domains/ai/AiFeature';
+
 export default function App() {
   // activeService state: null (overview), 'sap', 'recruitment', 'ai'
   const [activeService, setActiveService] = useState(null);
@@ -44,6 +49,21 @@ export default function App() {
         activeService={activeService}
         setActiveService={setActiveService}
       />
+
+      {/* Teammate Workspace Interactive Features Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {(!activeService || activeService === 'recruitment') && (
+          <RecruitmentFeature />
+        )}
+
+        {(!activeService || activeService === 'sap') && (
+          <SapFeature />
+        )}
+
+        {(!activeService || activeService === 'ai') && (
+          <AiFeature />
+        )}
+      </div>
 
       {/* Dynamic Projects Showcase */}
       <ProjectsSection
